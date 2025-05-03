@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLYTL Studio</title>
+    <link rel="icon" type="image/png" href="studio.png">
+    <style>
+        /* General Styles */
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --header-bg: linear-gradient(135deg, #444, #222);
+            --navbar-bg: rgba(68, 68, 68, 0.7);
+            --dropdown-bg: rgba(68, 68, 68, 0.9);
+            --link-color: #007BFF;
+            --divider-color: rgba(0, 0, 0, 0.5);
+            --section-hover-border: #007BFF;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --header-bg: linear-gradient(135deg, #222, #111);
+            --navbar-bg: rgba(30, 30, 30, 0.9);
+            --dropdown-bg: rgba(30, 30, 30, 0.95);
+            --link-color: #4da6ff;
+            --divider-color: rgba(255, 255, 255, 0.1);
+            --section-hover-border: #4da6ff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background 0.5s ease, color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 8px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(-100%);
+            opacity: 0;
+            animation: slideDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
+        }
+
+        @keyframes slideDown {
+            0% { transform: translateY(-100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .navbar.scrolled {
+            background: var(--navbar-bg);
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            position: relative;
+        }
+
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--link-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar a:hover::after {
+            width: 80%;
+        }
+
+        .navbar a:hover {
+            color: var(--link-color);
+            transform: translateY(-2px);
+        }
+
+        .navbar a.current {
+            color: var(--link-color);
+        }
+
+        .navbar a.current::after {
+            width: 80%;
+        }
+
+        /* "RLYTL Studio" Text in Navbar (Centered) */
+        .navbar-brand {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .navbar.scrolled .navbar-brand {
+            opacity: 1;
+        }
+
+        .navbar-brand .rlytl {
+            background: linear-gradient(to right, yellow, cyan);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-brand .studio {
+            font-size: 24px;
+            color: transparent;
+            background: linear-gradient(90deg, black 70%, white 20%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: whiteSlide 3s linear infinite;
+            position: relative;
+        }
+
+        .navbar-brand .studio::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            z-index: -1;
+            filter: blur(5px);
+            opacity: 0.5;
+            animation: whiteSlide 3s linear infinite;
+        }
+
+        @keyframes whiteSlide {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* Projects Dropdown */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: var(--dropdown-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+            animation: fadeIn 0.3s ease;
+            transform-origin: top center;
+            transform: scaleY(0);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+            transform: scaleY(1);
+            opacity: 1;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            transform: translateX(-10px);
+            opacity: 0;
+        }
+
+        .dropdown:hover .dropdown-content a {
+            transform: translateX(0);
+            opacity: 1;
+            transition-delay: calc(0.1s * var(--i));
+        }
+
+        .dropdown-content a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px) !important;
+        }
+
+        /* Header Section */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 130px 0px;
+            background: var(--header-bg);
+            width: 100%;
+            margin: 0;
+            box-shadow: 0 0 0 5px black;
+            animation: fadeIn 0.8s ease;
+            overflow: hidden;
+        }
+
+        .header-content {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transform: perspective(1000px) rotateX(20deg) translateY(50px);
+            opacity: 0;
+            animation: headerAppear 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+        }
+
+        @keyframes headerAppear {
+            0% { transform: perspective(1000px) rotateX(20deg) translateY(50px); opacity: 0; }
+            100% { transform: perspective(1000px) rotateX(0) translateY(0); opacity: 1; }
+        }
+
+        .header {
+            font-size: 80px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header-subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.5;
+            animation: fadeIn 1s ease 0.5s forwards, floatSubtle 4s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes floatSubtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .rlytl {
+            background: linear-gradient(to right, yellow, cyan);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .studio {
+            font-size: 80px;
+            color: transparent;
+            background: linear-gradient(90deg, black 70%, white 20%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: whiteSlide 3s linear infinite;
+            position: relative;
+            display: inline-block;
+        }
+
+        .studio::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            z-index: -1;
+            filter: blur(5px);
+            opacity: 0.5;
+            animation: whiteSlide 3s linear infinite;
+        }
+
+        /* Divider */
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--divider-color), transparent);
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, var(--link-color), transparent);
+            transform: translateX(-100%);
+            animation: dividerSlide 3s infinite;
+        }
+
+        @keyframes dividerSlide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Body Section */
+        .section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin: 40px auto;
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: sectionAppear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation-delay: calc(0.2s * var(--i));
+        }
+
+        @keyframes sectionAppear {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .section:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--section-hover-border);
+        }
+
+        .section-logo {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .section-logo:hover {
+            transform: scale(1.1) !important;
+            filter: drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.3));
+        }
+
+        .section-content {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+            cursor: default;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--link-color);
+            transition: all 0.5s ease;
+        }
+
+        .section-title:hover::after {
+            width: 100%;
+        }
+
+        .section-title:hover {
+            transform: scale(1.02);
+            text-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .section-title a {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .section-title a:hover {
+            color: var(--link-color);
+            transform: scale(1.05);
+        }
+
+        .toggle-icon {
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            display: inline-block;
+        }
+
+        .toggle-icon:hover {
+            animation: bounce 0.5s ease;
+            color: var(--link-color);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .section-divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--divider-color), transparent);
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover .section-divider {
+            background: linear-gradient(to right, transparent, var(--link-color), transparent);
+            height: 2px;
+        }
+
+        .section-description {
+            font-size: 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            cursor: default;
+            line-height: 1.8;
+            color: var(--text-color);
+            transform: translateY(-10px);
+        }
+
+        .section-description.show {
+            max-height: 500px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .google-sites-link {
+            font-size: 18px;
+            margin-top: 10px;
+            color: var(--link-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            line-height: 1.8;
+            padding: 8px 0;
+            border-radius: 5px;
+            padding-left: 10px;
+            transform: translateX(-10px);
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .google-sites-link.show {
+            opacity: 1;
+            transform: translateX(0);
+            max-height: 100px;
+        }
+
+        .google-sites-link:hover {
+            color: var(--link-color);
+            background: rgba(0, 123, 255, 0.1);
+            transform: translateX(5px) !important;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0);
+            animation: toggleAppear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s forwards;
+        }
+
+        @keyframes toggleAppear {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1) !important;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode-toggle i {
+            font-size: 24px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Footer Space */
+        .footer-space {
+            height: 100px;
+            position: relative;
+        }
+
+        .footer-space::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--link-color), transparent);
+            animation: dividerSlide 3s infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                font-size: 48px;
+            }
+            
+            .header-subtitle {
+                font-size: 18px;
+                padding: 0 20px;
+            }
+            
+            .section {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+                flex-direction: column;
+            }
+            
+            .section-logo {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .navbar-brand {
+                display: none;
+            }
+            
+            .navbar {
+                justify-content: center;
+            }
+            
+            .dropdown-content {
+                position: static;
+                transform: none;
+                opacity: 1;
+                display: none;
+                animation: none;
+            }
+            
+            .dropdown:hover .dropdown-content {
+                display: block;
+                transform: none;
+            }
+            
+            .dropdown-content a {
+                transform: none !important;
+                opacity: 1 !important;
+                transition-delay: 0s !important;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="index.html" class="current">Home</a>
+        <div class="dropdown">
+            <a href="../Projects.html" class="dropbtn">Projects</a>
+            <div class="dropdown-content">
+                <a href="../Rogue-Slime" style="--i:1">Rogue Slime</a>
+                <a href="../Doors" style="--i:2">Doors</a>
+            </div>
+        </div>
+        <div class="navbar-brand">
+            <span class="rlytl">RLYTL</span> <span class="studio">Studio</span>
+        </div>
+    </div>
+    
+    <!-- Header Section -->
+    <div class="header-container">
+        <div class="header-content">
+            <div class="header">
+                <span class="rlytl">RLYTL</span> <span class="studio">STUDIO</span>
+            </div>
+            <div class="header-subtitle">
+                Creating immersive gaming experiences with passion and innovation
+            </div>
+        </div>
+    </div>
+    
+    <!-- Projects Section -->
+    <div class="section" style="--i:1">
+        <a href="../Projects.html">
+            <img class="section-logo" src="studio.png" alt="RLYTL Studio Logo">
+        </a>
+        <div class="section-content">
+            <h2 class="section-title">
+                <a href="../Projects.html">Our Projects</a>
+                <span class="toggle-icon" onclick="toggleDescription('projects')">▼</span>
+            </h2>
+            <div class="section-divider"></div>
+            <p id="projects" class="section-description">
+                Explore our collection of creative projects and games. Each project represents our dedication to quality and innovation in game development. From action-packed adventures to puzzle games, we strive to deliver unique experiences for all players.
+            </p>
+            <a href="../Projects.html" class="google-sites-link">View All Projects →</a>
+        </div>
+    </div>
+    
+    <!-- Divider Between Projects and Info -->
+    <div class="divider"></div>
+    
+    <!-- Info Section -->
+    <div class="section" style="--i:2">
+        <img class="section-logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8Rzt07KyyYi9ZQYTAdK6DJ7uiEVSIv4ykgw&s" alt="Info Logo">
+        <div class="section-content">
+            <h2 class="section-title">
+                About Us
+                <span class="toggle-icon" onclick="toggleDescription('info')">▼</span>
+            </h2>
+            <div class="section-divider"></div>
+            <p id="info" class="section-description">
+                <b>Creator:</b> RYL/LYT<br>
+                <b>Founded:</b> 2025<br>
+                <b>Mission:</b> To create game in the free time.<br>
+                <b>Picture source:</b> From the internet<br><br>
+                We're a secondary school student that code in the free time
+            </p>
+        </div>
+    </div>
+    
+    <!-- Divider Below Info Section -->
+    <div class="divider"></div>
+    
+    <!-- Other Link Section -->
+    <div class="section" style="--i:3">
+        <img class="section-logo" src="https://lh6.googleusercontent.com/xIo2hipe2pgLDbGiQ4_uEC9w55qje2H98qXd1YvLT5Cy5pYFGIQ8vqdlAL7pwO6cKNnp2xuwxVh_vvL2o5NqPeYygViiyKFBPjZ6B094uMHnbncQna0KzBCFKTzAtSazYg=w1280" alt="Other Link Logo">
+        <div class="section-content">
+            <h2 class="section-title">
+                Connect With Us
+                <span class="toggle-icon" onclick="toggleDescription('other-link')">▼</span>
+            </h2>
+            <div class="section-divider"></div>
+            <p id="other-link" class="section-description">
+                Stay updated with our latest projects and announcements through our social media channels and other platforms.
+            </p>
+            <a href="https://www.tiktok.com/@rylplay" class="google-sites-link show" target="_blank"><i class="fab fa-tiktok"></i> Follow us on TikTok</a>
+            <a href="https://sites.google.com/view/rylplay/" class="google-sites-link show" target="_blank"><i class="fab fa-google"></i> Visit our Old Google Sites</a>
+        </div>
+    </div>
+    
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle" id="darkModeToggle">
+        <i class="fas fa-moon"></i>
+    </div>
+    
+    <!-- Footer Space -->
+    <div class="footer-space"></div>
+
+    <script>
+        // JavaScript for Navigation Bar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        function toggleDescription(id) {
+            const desc = document.getElementById(id);
+            const arrow = document.querySelector(`[onclick="toggleDescription('${id}')"]`);
+            const googleSitesLinks = document.querySelectorAll(`#${id} ~ .google-sites-link`);
+            
+            desc.classList.toggle("show");
+            arrow.textContent = desc.classList.contains("show") ? "▲" : "▼";
+            
+            googleSitesLinks.forEach(link => {
+                link.classList.toggle("show");
+            });
+        }
+
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+
+        // Apply dark mode if previously set
+        if (darkMode) {
+            body.setAttribute('data-theme', 'dark');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            darkMode = !darkMode;
+            if (darkMode) {
+                body.setAttribute('data-theme', 'dark');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                body.removeAttribute('data-theme');
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            localStorage.setItem('darkMode', darkMode);
+        });
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate elements when they come into view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
