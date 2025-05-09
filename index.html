@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RLYTL Studio</title>
-    <link rel="icon" type="image/png" href="studio.png">
+    <link rel="icon" type="image/png" href="https://rylplay.github.io/RLYTL/studio.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* General Styles */
         :root {
@@ -13,11 +15,12 @@
             --card-bg: #ffffff;
             --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --header-bg: linear-gradient(135deg, #444, #222);
-            --navbar-bg: rgba(68, 68, 68, 0.7);
-            --dropdown-bg: rgba(68, 68, 68, 0.9);
+            --navbar-bg: rgba(68, 68, 68, 0.7); /* Slightly transparent */
+            --dropdown-bg: rgba(50, 50, 50, 0.9); /* Darker dropdown */
             --link-color: #007BFF;
             --divider-color: rgba(0, 0, 0, 0.5);
             --section-hover-border: #007BFF;
+            --font-main: 'Inter', sans-serif; /* Main font */
         }
 
         [data-theme="dark"] {
@@ -26,8 +29,8 @@
             --card-bg: #1e1e1e;
             --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             --header-bg: linear-gradient(135deg, #222, #111);
-            --navbar-bg: rgba(30, 30, 30, 0.9);
-            --dropdown-bg: rgba(30, 30, 30, 0.95);
+            --navbar-bg: rgba(30, 30, 30, 0.9); /* Darker transparent */
+            --dropdown-bg: rgba(20, 20, 20, 0.95); /* Even darker dropdown */
             --link-color: #4da6ff;
             --divider-color: rgba(255, 255, 255, 0.1);
             --section-hover-border: #4da6ff;
@@ -35,12 +38,12 @@
 
         body {
             margin: 0;
-            font-family: 'Arial', sans-serif;
+            font-family: var(--font-main); /* Changed font */
             background: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
             transition: background 0.5s ease, color 0.5s ease;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
         /* Navigation Bar */
@@ -60,6 +63,7 @@
             transform: translateY(-100%);
             opacity: 0;
             animation: slideDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
+            background: var(--navbar-bg); /* Default background for non-scrolled */
         }
 
         @keyframes slideDown {
@@ -68,8 +72,8 @@
         }
 
         .navbar.scrolled {
-            background: var(--navbar-bg);
-            padding: 10px 20px;
+            /* background: var(--navbar-bg); */ /* Already set */
+            padding: 10px 20px; /* Slightly more padding when scrolled */
         }
 
         .navbar a {
@@ -94,7 +98,8 @@
             transform: translateX(-50%);
         }
 
-        .navbar a:hover::after {
+        .navbar a:hover::after,
+        .navbar a.current::after {
             width: 80%;
         }
 
@@ -107,18 +112,13 @@
             color: var(--link-color);
         }
 
-        .navbar a.current::after {
-            width: 80%;
-        }
-
-        /* "RLYTL Studio" Text in Navbar (Centered) */
         .navbar-brand {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
             font-size: 24px;
             font-weight: bold;
-            opacity: 0;
+            opacity: 0; /* Hidden by default, shown on scroll */
             transition: all 0.5s ease;
         }
 
@@ -129,15 +129,17 @@
         .navbar-brand .rlytl {
             background: linear-gradient(to right, yellow, cyan);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .navbar-brand .studio {
-            font-size: 24px;
+            font-size: 24px; /* Base size for navbar brand */
             color: transparent;
             background: linear-gradient(90deg, black 70%, white 20%);
             background-size: 200% 100%;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: whiteSlide 3s linear infinite;
             position: relative;
@@ -152,6 +154,7 @@
             height: 100%;
             background: inherit;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             z-index: -1;
             filter: blur(5px);
@@ -176,41 +179,46 @@
             background: var(--dropdown-bg);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            min-width: 160px;
+            min-width: 180px; /* Slightly wider */
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             z-index: 1;
-            border-radius: 5px;
-            animation: fadeIn 0.3s ease;
+            border-radius: 8px; /* More rounded */
+            animation: fadeInDropdown 0.3s ease forwards; /* Changed animation */
             transform-origin: top center;
-            transform: scaleY(0);
             opacity: 0;
-            transition: all 0.3s ease;
+            padding: 5px 0; /* Padding for items */
+        }
+        
+        @keyframes fadeInDropdown {
+            0% { opacity: 0; transform: scaleY(0.9) translateY(-10px); }
+            100% { opacity: 1; transform: scaleY(1) translateY(0); }
         }
 
         .dropdown:hover .dropdown-content {
             display: block;
-            transform: scaleY(1);
-            opacity: 1;
+            /* Animation handles visibility */
         }
 
         .dropdown-content a {
             color: white;
-            padding: 12px 16px;
+            padding: 10px 20px; /* Adjusted padding */
             text-decoration: none;
             display: block;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease, transform 0.3s ease; /* Added transform transition */
             transform: translateX(-10px);
             opacity: 0;
+            font-size: 16px; /* Slightly smaller font for dropdown items */
         }
 
         .dropdown:hover .dropdown-content a {
             transform: translateX(0);
             opacity: 1;
-            transition-delay: calc(0.1s * var(--i));
+            transition-delay: calc(0.05s * var(--i)); /* Faster stagger */
         }
 
         .dropdown-content a:hover {
             background: rgba(255, 255, 255, 0.1);
+            color: var(--link-color); /* Highlight color on hover */
             transform: translateX(5px) !important;
         }
 
@@ -220,17 +228,19 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 130px 0px;
+            padding: 130px 20px; /* Added horizontal padding */
             background: var(--header-bg);
             width: 100%;
+            box-sizing: border-box; /* Include padding in width */
             margin: 0;
-            box-shadow: 0 0 0 5px black;
+            box-shadow: 0 0 0 5px rgba(0,0,0,0.7); /* Darker shadow */
             animation: fadeIn 0.8s ease;
-            overflow: hidden;
+            overflow: hidden; /* Prevent content overflow */
         }
 
         .header-content {
             width: 100%;
+            max-width: 1000px; /* Max width for content */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -238,6 +248,7 @@
             transform: perspective(1000px) rotateX(20deg) translateY(50px);
             opacity: 0;
             animation: headerAppear 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+            text-align: center; /* Ensure text is centered */
         }
 
         @keyframes headerAppear {
@@ -246,49 +257,65 @@
         }
 
         .header {
-            font-size: 80px;
+            font-size: 7vw; /* Responsive font size */
+            max-font-size: 80px; /* Max font size */
+            min-font-size: 40px; /* Min font size */
             font-weight: 900;
             text-transform: uppercase;
             margin-bottom: 20px;
             text-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
             animation: float 3s ease-in-out infinite;
         }
+         /* Clamp font size for .header */
+        .header {
+            font-size: clamp(40px, 7vw, 80px);
+        }
+
 
         .header-subtitle {
-            font-size: 24px;
+            font-size: clamp(16px, 2.5vw, 24px); /* Responsive font size */
             color: rgba(255, 255, 255, 0.8);
             max-width: 600px;
             text-align: center;
             line-height: 1.5;
             animation: fadeIn 1s ease 0.5s forwards, floatSubtle 4s ease-in-out infinite;
             opacity: 0;
+            padding: 0 10px; /* Padding for smaller screens */
         }
 
         @keyframes floatSubtle {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
         }
+        
+        @keyframes float { /* Ensure float animation is defined */
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
 
-        .rlytl {
+
+        .rlytl { /* Used in header and navbar */
             background: linear-gradient(to right, yellow, cyan);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             display: inline-block;
         }
 
-        .studio {
-            font-size: 80px;
+        .header .studio { /* Specifically for header */
+            font-size: inherit; /* Inherit from .header for responsiveness */
             color: transparent;
             background: linear-gradient(90deg, black 70%, white 20%);
             background-size: 200% 100%;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: whiteSlide 3s linear infinite;
             position: relative;
             display: inline-block;
         }
 
-        .studio::after {
+        .header .studio::after { /* Specifically for header */
             content: '';
             position: absolute;
             top: 0;
@@ -297,6 +324,7 @@
             height: 100%;
             background: inherit;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             z-index: -1;
             filter: blur(5px);
@@ -309,7 +337,7 @@
             width: 100%;
             height: 1px;
             background: linear-gradient(to right, transparent, var(--divider-color), transparent);
-            margin: 20px 0;
+            margin: 40px 0; /* Increased margin */
             position: relative;
             overflow: hidden;
         }
@@ -334,7 +362,7 @@
         /* Body Section */
         .section {
             display: flex;
-            align-items: center;
+            align-items: center; /* Vertically align items */
             gap: 30px;
             margin: 40px auto;
             width: 90%;
@@ -358,22 +386,22 @@
         }
 
         .section:hover {
-            transform: translateY(-5px) !important;
+            transform: translateY(-5px) !important; /* Ensure hover transform applies */
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
             border-color: var(--section-hover-border);
         }
 
         .section-logo {
-            width: 200px;
-            height: 200px;
-            object-fit: contain;
+            width: 180px; /* Adjusted size */
+            height: 180px;
+            object-fit: cover; /* Changed to cover for better filling */
             flex-shrink: 0;
             cursor: pointer;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border-radius: 10px;
             background: rgba(0, 0, 0, 0.05);
             padding: 10px;
-            animation: float 4s ease-in-out infinite;
+            animation: float 4s ease-in-out infinite alternate; /* Added alternate */
         }
 
         .section-logo:hover {
@@ -387,13 +415,13 @@
         }
 
         .section-title {
-            font-size: 36px;
+            font-size: clamp(24px, 4vw, 36px); /* Responsive font size */
             font-weight: 800;
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 15px; /* Increased margin */
             cursor: default;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
@@ -412,12 +440,16 @@
             transition: all 0.5s ease;
         }
 
-        .section-title:hover::after {
+        .section:hover .section-title::after { /* Animate underline on section hover */
+            width: 50%;
+        }
+        .section-title:hover::after{ /* Full underline on title hover */
             width: 100%;
         }
 
+
         .section-title:hover {
-            transform: scale(1.02);
+            /* transform: scale(1.02); */ /* Removed to avoid conflict with section hover */
             text-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
         }
 
@@ -440,6 +472,7 @@
             transition: all 0.3s ease;
             color: var(--text-color);
             display: inline-block;
+            margin-left: 10px; /* Added margin */
         }
 
         .toggle-icon:hover {
@@ -466,7 +499,7 @@
         }
 
         .section-description {
-            font-size: 18px;
+            font-size: clamp(15px, 2vw, 18px); /* Responsive font size */
             max-height: 0;
             overflow: hidden;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -478,40 +511,44 @@
         }
 
         .section-description.show {
-            max-height: 500px;
+            max-height: 500px; /* Ensure enough height for content */
             opacity: 1;
             transform: translateY(0);
         }
 
         .google-sites-link {
-            font-size: 18px;
-            margin-top: 10px;
+            font-size: clamp(15px, 2vw, 18px); /* Responsive font size */
+            margin-top: 15px; /* Increased margin */
             color: var(--link-color);
             text-decoration: none;
             transition: all 0.3s ease;
-            display: block;
+            display: block; /* Changed to block for consistent layout */
             line-height: 1.8;
             padding: 8px 0;
             border-radius: 5px;
-            padding-left: 10px;
+            /* padding-left: 10px; */ /* Removed for block display */
             transform: translateX(-10px);
             opacity: 0;
             max-height: 0;
             overflow: hidden;
-            transition: all 0.5s ease;
+            /* transition: all 0.5s ease; */ /* Already defined */
+        }
+        .google-sites-link i { /* Icon margin */
+            margin-right: 8px;
         }
 
         .google-sites-link.show {
             opacity: 1;
             transform: translateX(0);
-            max-height: 100px;
+            max-height: 100px; /* Ensure enough height */
         }
 
         .google-sites-link:hover {
             color: var(--link-color);
             background: rgba(0, 123, 255, 0.1);
-            transform: translateX(5px) !important;
+            /* transform: translateX(5px) !important; */ /* Keep consistent with .show */
             box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+            padding-left: 10px; /* Indent on hover */
         }
 
         /* Dark Mode Toggle */
@@ -568,72 +605,140 @@
             animation: dividerSlide 3s infinite;
         }
 
-        /* Responsive Design */
+        /* Responsive Design - Tablet and Mobile */
         @media (max-width: 768px) {
-            .header {
-                font-size: 48px;
+            .header-container {
+                padding: 80px 15px; /* Adjusted padding */
+                box-shadow: none; /* Remove heavy shadow on mobile */
             }
-            
+            /* .header font-size already handled by clamp */
+            /* .header-subtitle font-size already handled by clamp */
             .header-subtitle {
-                font-size: 18px;
-                padding: 0 20px;
+                padding: 0 10px;
             }
             
             .section {
                 flex-direction: column;
                 text-align: center;
-                padding: 20px;
+                padding: 25px 15px; /* Adjusted padding */
+                gap: 20px;
+                width: 95%;
             }
             
+            .section-content {
+                text-align: center; /* Center content within section */
+            }
+
             .section-title {
-                font-size: 28px;
-                flex-direction: column;
+                /* font-size already handled by clamp */
+                flex-direction: column; /* Stack title and icon */
+                align-items: center; /* Center items */
+            }
+            .section-title .toggle-icon {
+                margin-top: 8px; /* Space between title and icon */
+                margin-left: 0; /* Reset margin */
             }
             
             .section-logo {
-                width: 150px;
-                height: 150px;
+                width: 120px;
+                height: 120px;
+                margin-bottom: 10px; /* Space below logo when stacked */
             }
             
+            /* .section-description and .google-sites-link font-size handled by clamp */
+            
             .navbar-brand {
-                display: none;
+                display: none; /* Keep hidden as per original design */
             }
             
             .navbar {
-                justify-content: center;
+                justify-content: center; /* Center nav items */
+                padding: 8px 10px;
+            }
+            .navbar a {
+                font-size: 16px;
+                padding: 8px 10px;
             }
             
             .dropdown-content {
-                position: static;
-                transform: none;
-                opacity: 1;
-                display: none;
-                animation: none;
+                position: static; /* Flow in document */
+                transform: none !important; /* Reset transform */
+                opacity: 1 !important; /* Ensure visible */
+                display: none; /* Controlled by JS/hover */
+                animation: none !important; /* Remove animation for static */
+                width: 100%; /* Full width */
+                box-shadow: none;
+                border-radius: 0;
+                background: var(--navbar-bg); /* Match navbar bg */
             }
-            
             .dropdown:hover .dropdown-content {
                 display: block;
-                transform: none;
             }
-            
             .dropdown-content a {
+                text-align: center;
                 transform: none !important;
                 opacity: 1 !important;
                 transition-delay: 0s !important;
+                padding: 12px 10px;
+            }
+            .dropdown-content a:hover {
+                background: rgba(255, 255, 255, 0.2); /* Lighter hover for mobile dropdown */
+            }
+
+            .dark-mode-toggle {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                left: 20px;
+            }
+            .dark-mode-toggle i {
+                font-size: 20px;
+            }
+        }
+
+        /* Responsive Design - Smaller Mobiles */
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 60px 10px;
+            }
+            /* .header font-size already handled by clamp */
+            /* .header-subtitle font-size already handled by clamp */
+            
+            .section {
+                padding: 20px 10px;
+                gap: 15px;
+            }
+            /* .section-title font-size already handled by clamp */
+            .section-logo {
+                width: 100px;
+                height: 100px;
+            }
+            /* .section-description, .google-sites-link font-size handled by clamp */
+
+            .navbar a {
+                font-size: 14px;
+                padding: 6px 8px;
+            }
+            .dark-mode-toggle {
+                width: 40px;
+                height: 40px;
+                bottom: 15px;
+                left: 15px;
+            }
+            .dark-mode-toggle i {
+                font-size: 18px;
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
     <div class="navbar">
         <a href="index.html" class="current">Home</a>
         <div class="dropdown">
-            <a href="../Projects.html" class="dropbtn">Projects</a>
+            <a href="../Countdown.html" class="dropbtn">Projects</a>
             <div class="dropdown-content">
-                <a href="../Rogue-Slime" style="--i:1">Rogue Slime</a>
-                <a href="../Doors" style="--i:2">Doors</a>
+                <a href="../Countdown.html" style="--i:1">Rogue Slime</a>
+                <a href="../Countdown.html" style="--i:2">Doors</a>
             </div>
         </div>
         <div class="navbar-brand">
@@ -641,7 +746,6 @@
         </div>
     </div>
     
-    <!-- Header Section -->
     <div class="header-container">
         <div class="header-content">
             <div class="header">
@@ -653,78 +757,117 @@
         </div>
     </div>
     
-    <!-- Projects Section -->
-    <div class="section" style="--i:1">
-        <a href="../Projects.html">
-            <img class="section-logo" src="studio.png" alt="RLYTL Studio Logo">
-        </a>
-        <div class="section-content">
-            <h2 class="section-title">
-                <a href="../Projects.html">Our Projects</a>
-                <span class="toggle-icon" onclick="toggleDescription('projects')">▼</span>
-            </h2>
-            <div class="section-divider"></div>
-            <p id="projects" class="section-description">
-                Explore our collection of creative projects and games. Each project represents our dedication to quality and innovation in game development. From action-packed adventures to puzzle games, we strive to deliver unique experiences for all players.
-            </p>
-            <a href="../Projects.html" class="google-sites-link">View All Projects →</a>
-        </div>
+<div class="section" style="--i:1">
+    <a href="../Countdown.html">
+        <img class="section-logo"
+             src="https://rylplay.github.io/RLYTL/studio.png"
+             alt="RLYTL Studio Projects Logo"
+             onerror="this.src='https://placehold.co/180x180/E0E0E0/333333?text=Projects&font=Inter'; this.onerror=null;"
+             style="width: 120px; height: auto;">
+    </a>
+    <div class="section-content">
+        <h2 class="section-title">
+            <a href="../Countdown.html">Our Projects</a>
+            <span class="toggle-icon" onclick="toggleDescription('projects', this)">▼</span>
+        </h2>
+        <div class="section-divider"></div>
+        <p id="projects" class="section-description">
+            Explore our collection of creative projects and games. Each project represents our dedication to quality and innovation in game development. From action-packed adventures to puzzle games, we strive to deliver unique experiences for all players.
+        </p>
+        <a href="../Countdown.html" class="google-sites-link show" target="_blank">View All Projects →</a>
     </div>
+</div>
     
-    <!-- Divider Between Projects and Info -->
     <div class="divider"></div>
     
-    <!-- Info Section -->
     <div class="section" style="--i:2">
-        <img class="section-logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8Rzt07KyyYi9ZQYTAdK6DJ7uiEVSIv4ykgw&s" alt="Info Logo">
+        <img class="section-logo" 
+             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8Rzt07KyyYi9ZQYTAdK6DJ7uiEVSIv4ykgw&s" 
+             alt="Info Logo"
+             onerror="this.src='https://placehold.co/180x180/C0C0C0/333333?text=About+Us&font=Inter'; this.onerror=null;">
         <div class="section-content">
             <h2 class="section-title">
                 About Us
-                <span class="toggle-icon" onclick="toggleDescription('info')">▼</span>
+                <span class="toggle-icon" onclick="toggleDescription('info', this)">▼</span>
             </h2>
             <div class="section-divider"></div>
             <p id="info" class="section-description">
                 <b>Creator:</b> RYL/LYT<br>
                 <b>Founded:</b> 2025<br>
-                <b>Mission:</b> To create game in the free time.<br>
+                <b>Mission:</b> To create games in our free time.<br>
                 <b>Picture source:</b> From the internet<br><br>
-                We're a secondary school student that code in the free time
+                We're secondary school students who code in our free time.
+                <a href="https://www.kwanghua.edu.my" class="google-sites-link show" target="_blank"><i class="fa-solid fa-school"></i> Visit our School</a>
             </p>
         </div>
     </div>
     
-    <!-- Divider Below Info Section -->
     <div class="divider"></div>
     
-    <!-- Other Link Section -->
     <div class="section" style="--i:3">
-        <img class="section-logo" src="https://lh6.googleusercontent.com/xIo2hipe2pgLDbGiQ4_uEC9w55qje2H98qXd1YvLT5Cy5pYFGIQ8vqdlAL7pwO6cKNnp2xuwxVh_vvL2o5NqPeYygViiyKFBPjZ6B094uMHnbncQna0KzBCFKTzAtSazYg=w1280" alt="Other Link Logo">
+        <img class="section-logo" 
+             src="data:image/png;base64,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" 
+             alt="Other Link Logo"
+             onerror="this.src='https://placehold.co/180x180/A0A0A0/333333?text=Connect&font=Inter'; this.onerror=null;">
         <div class="section-content">
             <h2 class="section-title">
                 Connect With Us
-                <span class="toggle-icon" onclick="toggleDescription('other-link')">▼</span>
+                <span class="toggle-icon" onclick="toggleDescription('other-link', this)">▼</span>
             </h2>
             <div class="section-divider"></div>
             <p id="other-link" class="section-description">
                 Stay updated with our latest projects and announcements through our social media channels and other platforms.
-            </p>
             <a href="https://www.tiktok.com/@rylplay" class="google-sites-link show" target="_blank"><i class="fab fa-tiktok"></i> Follow us on TikTok</a>
             <a href="https://sites.google.com/view/rylplay/" class="google-sites-link show" target="_blank"><i class="fab fa-google"></i> Visit our Old Google Sites</a>
+            <a href="mailto:s2024226@mykwanghua.edu.my" class="google-sites-link show" target="_blank"><i class="fa-regular fa-envelope"></i>E-mail Us</a>
+            </p>
         </div>
     </div>
     
-    <!-- Dark Mode Toggle -->
-    <div class="dark-mode-toggle" id="darkModeToggle">
+    <div class="dark-mode-toggle">
         <i class="fas fa-moon"></i>
     </div>
     
-    <!-- Footer Space -->
     <div class="footer-space"></div>
 
     <script>
-        // JavaScript for Navigation Bar Scroll Effect
+        const navbar = document.querySelector('.navbar');
+        const navbarBrand = document.querySelector('.navbar-brand');
+        const darkModeToggle = document.querySelector('.dark-mode-toggle');
+        const body = document.body;
+        const sections = document.querySelectorAll('.section');
+        const dropdown = document.querySelector('.dropdown');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+
+        function toggleDescription(id, icon) {
+            const description = document.getElementById(id);
+            description.classList.toggle('show');
+            icon.textContent = icon.textContent === '▼' ? '▲' : '▼';
+        }
+
+        function toggleDarkMode() {
+            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            const icon = darkModeToggle.querySelector('i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+            localStorage.setItem('theme', body.getAttribute('data-theme'));
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.setAttribute('data-theme', savedTheme);
+            const icon = darkModeToggle.querySelector('i');
+            if (savedTheme === 'dark') {
+                icon.classList.add('fa-sun');
+                icon.classList.remove('fa-moon');
+            } else {
+                icon.classList.add('fa-moon');
+                icon.classList.remove('fa-sun');
+            }
+        }
+
         window.addEventListener('scroll', () => {
-            const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
                 navbar.classList.add('scrolled');
             } else {
@@ -732,57 +875,20 @@
             }
         });
 
-        function toggleDescription(id) {
-            const desc = document.getElementById(id);
-            const arrow = document.querySelector(`[onclick="toggleDescription('${id}')"]`);
-            const googleSitesLinks = document.querySelectorAll(`#${id} ~ .google-sites-link`);
-            
-            desc.classList.toggle("show");
-            arrow.textContent = desc.classList.contains("show") ? "▲" : "▼";
-            
-            googleSitesLinks.forEach(link => {
-                link.classList.toggle("show");
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+
+        // Mobile menu toggle functionality (optional - for demonstration)
+        if (window.innerWidth <= 768) {
+            dropdown.addEventListener('click', () => {
+                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
             });
         }
 
-        // Dark Mode Toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const body = document.body;
-        let darkMode = localStorage.getItem('darkMode') === 'true';
-
-        // Apply dark mode if previously set
-        if (darkMode) {
-            body.setAttribute('data-theme', 'dark');
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-
-        darkModeToggle.addEventListener('click', () => {
-            darkMode = !darkMode;
-            if (darkMode) {
-                body.setAttribute('data-theme', 'dark');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                body.removeAttribute('data-theme');
-                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        // Add this to your script to close the dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (dropdownContent.style.display === 'block' && !dropdownContent.contains(event.target) && event.target !== dropdown) {
+                dropdownContent.style.display = 'none';
             }
-            localStorage.setItem('darkMode', darkMode);
-        });
-
-        // Initialize animations
-        document.addEventListener('DOMContentLoaded', () => {
-            // Animate elements when they come into view
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = 1;
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.section').forEach(section => {
-                observer.observe(section);
-            });
         });
     </script>
 </body>
