@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://rylplay.github.io/RLYTL/studio.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --header-bg: linear-gradient(135deg, #444, #222);
+            --navbar-bg: rgba(68, 68, 68, 0.7);
+            --dropdown-bg: rgba(50, 50, 50, 0.9);
+            --link-color: #007BFF;
+            --divider-color: rgba(0, 0, 0, 0.5);
+            --section-hover-border: #007BFF;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --header-bg: linear-gradient(135deg, #222, #111);
+            --navbar-bg: rgba(30, 30, 30, 0.9);
+            --dropdown-bg: rgba(20, 20, 20, 0.95);
+            --link-color: #4da6ff;
+            --divider-color: rgba(255, 255, 255, 0.1);
+            --section-hover-border: #4da6ff;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-main);
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background 0.5s ease, color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 8px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(-100%);
+            opacity: 0;
+            animation: slideDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
+            background: var(--navbar-bg);
+        }
+
+        @keyframes slideDown {
+            0% { transform: translateY(-100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .navbar.scrolled {
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            position: relative;
+        }
+
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--link-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar a:hover::after,
+        .navbar a.current::after {
+            width: 80%;
+        }
+
+        .navbar a:hover {
+            color: var(--link-color);
+            transform: translateY(-2px);
+        }
+
+        .navbar a.current {
+            color: var(--link-color);
+        }
+
+        .navbar-brand {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .navbar.scrolled .navbar-brand {
+            opacity: 1;
+        }
+
+        .navbar-brand .rlytl {
+            background: linear-gradient(to right, yellow, cyan);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-brand .studio {
+            font-size: 24px;
+            color: transparent;
+            background: linear-gradient(90deg, black 70%, white 20%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: whiteSlide 3s linear infinite;
+            position: relative;
+        }
+
+        .navbar-brand .studio::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            z-index: -1;
+            filter: blur(5px);
+            opacity: 0.5;
+            animation: whiteSlide 3s linear infinite;
+        }
+
+        @keyframes whiteSlide {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: var(--dropdown-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 8px;
+            animation: fadeInDropdown 0.3s ease forwards;
+            transform-origin: top center;
+            opacity: 0;
+            padding: 5px 0;
+        }
+
+        @keyframes fadeInDropdown {
+            0% { opacity: 0; transform: scaleY(0.9) translateY(-10px); }
+            100% { opacity: 1; transform: scaleY(1) translateY(0); }
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease, transform 0.3s ease;
+            transform: translateX(-10px);
+            opacity: 0;
+            font-size: 16px;
+        }
+
+        .dropdown:hover .dropdown-content a {
+            transform: translateX(0);
+            opacity: 1;
+            transition-delay: calc(0.05s * var(--i));
+        }
+
+        .dropdown-content a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--link-color);
+            transform: translateX(5px) !important;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 130px 20px;
+            background: var(--header-bg);
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            box-shadow: 0 0 0 5px rgba(0,0,0,0.7);
+            animation: fadeIn 0.8s ease;
+            overflow: hidden;
+        }
+
+        .header-content {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transform: perspective(1000px) rotateX(20deg) translateY(50px);
+            opacity: 0;
+            animation: headerAppear 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+            text-align: center;
+        }
+
+        @keyframes headerAppear {
+            0% { transform: perspective(1000px) rotateX(20deg) translateY(50px); opacity: 0; }
+            100% { transform: perspective(1000px) rotateX(0) translateY(0); opacity: 1; }
+        }
+
+        @keyframes colorSlide {
+          0% {
+            color: #fff;
+          }
+          25% {
+            color: #00ffff;
+          }
+          50% {
+            color: #ff00ff;
+          }
+          75% {
+            color: #ffff00;
+          }
+          100% {
+            color: #fff;
+          }
+        }
+
+        .header {
+            font-size: clamp(40px, 7vw, 80px);
+        }
+
+        .header-subtitle {
+            font-size: clamp(5px, 2.5vw, 5px);
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 300px;
+            text-align: center;
+            line-height: 1.5;
+            animation: fadeIn 1s ease 0.5s forwards, floatSubtle 4s ease-in-out infinite;
+            opacity: 0;
+            padding: 0 10px;
+        }
+
+        @keyframes floatSubtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header {
+            font-size: 80px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 20px;
+            color: rgb(127, 127, 127);
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.5;
+            animation: fadeIn 1s ease 0.5s forwards, floatSubtle 4s ease-in-out infinite;
+            opacity: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .header .studio::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            z-index: -1;
+            filter: blur(5px);
+            opacity: 0.5;
+            animation: whiteSlide 3s linear infinite;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--divider-color), transparent);
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, var(--link-color), transparent);
+            transform: translateX(-100%);
+            animation: dividerSlide 3s infinite;
+        }
+
+        @keyframes dividerSlide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin: 40px auto;
+            width: 90%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: sectionAppear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation-delay: calc(0.2s * var(--i));
+        }
+
+        @keyframes sectionAppear {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .section:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--section-hover-border);
+        }
+
+        .section-logo {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            animation: float 4s ease-in-out infinite alternate;
+        }
+
+        .section-logo:hover {
+            transform: scale(1.1) !important;
+            filter: drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.3));
+        }
+
+        .section-content {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .section-title {
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 15px;
+            cursor: default;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            position: relative;
+            animation: fadeInText 1s ease, slideInTitle 0.5s ease-out;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        @keyframes fadeInText {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes slideInTitle {
+          from {
+            transform: translateX(-20px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--link-color);
+            transition: all 0.5s ease;
+        }
+
+        .section:hover .section-title::after {
+            width: 50%;
+        }
+        .section-title:hover::after{
+            width: 100%;
+        }
+
+        .section-title:hover {
+            text-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .section-title a {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .section-title a:hover {
+            color: var(--link-color);
+            transform: scale(1.05);
+        }
+
+        .toggle-icon {
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .toggle-icon:hover {
+            animation: bounce 0.5s ease;
+            color: var(--link-color);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .section-divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--divider-color), transparent);
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover .section-divider {
+            background: linear-gradient(to right, transparent, var(--link-color), transparent);
+            height: 2px;
+        }
+
+        .section-description {
+            font-size: clamp(15px, 2vw, 18px);
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            cursor: default;
+            line-height: 1.8;
+            color: var(--text-color);
+            transform: translateY(-10px);
+            animation: fadeInText 1s ease, slideInDescription 0.5s ease-out 0.2s;
+        }
+        @keyframes slideInDescription {
+          from{
+            transform: translateY(-10px);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+
+        .section-description.show {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .google-sites-link {
+            font-size: clamp(15px, 2vw, 18px);
+            margin-top: 15px;
+            color: var(--link-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            line-height: 1.8;
+            padding: 8px 0;
+            border-radius: 5px;
+            transform: translateX(-10px);
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            animation: fadeInText 1s ease, slideInLink 0.5s ease-out 0.4s;
+        }
+        @keyframes slideInLink {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        .google-sites-link i {
+            margin-right: 8px;
+        }
+
+        .google-sites-link.show {
+            opacity: 1;
+            transform: translateX(0);
+            max-height: 100px;
+        }
+
+        .google-sites-link:hover {
+            color: var(--link-color);
+            background: rgba(0, 123, 255, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+            padding-left: 10px;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0);
+            animation: toggleAppear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s forwards;
+        }
+
+        @keyframes toggleAppear {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1) !important;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode-toggle i {
+            font-size: 24px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Enhanced Countdown Timer Styles */
+        #countdown-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #countdown-timer {
+            font-size: 5.3vw;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 50px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            letter-spacing: -5px;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            min-height: 1em;
+        }
+
+        .countdown-digit {
+            display: inline-block;
+            background: linear-gradient(90deg, #ff8a00, #e52e71, #00b4db, #00ff95);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: 
+                gradientShift 4s ease infinite, 
+                floatChar 3s ease-in-out infinite;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transform: translateZ(0);
+            margin: 0 2px;
+            transition: opacity 0.3s ease;
+        }
+
+        .countdown-separator {
+            display: inline-block;
+            color: var(--text-color);
+            margin: 0 2px;
+            animation: floatChar 3s ease-in-out infinite;
+        }
+
+        .countdown-digit.changing {
+            opacity: 0.5;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes floatChar {
+            0%, 100% { 
+                transform: translateY(0) translateZ(0);
+            }
+            50% { 
+                transform: translateY(-10px) translateZ(10px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            #countdown-timer {
+                font-size: 10vw;
+                letter-spacing: -3px;
+            }
+            
+            .countdown-digit, .countdown-separator {
+                margin: 0 1px;
+            }
+        }
+
+        .footer-space {
+            height: 100px;
+            position: relative;
+        }
+
+        .footer-space::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--link-color), transparent);
+            animation: dividerSlide 3s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 80px 15px;
+                box-shadow: none;
+            }
+            .header-subtitle {
+                padding: 0 10px;
+            }
+            .section {
+                flex-direction: column;
+                text-align: center;
+                padding: 25px 15px;
+                gap: 20px;
+                width: 95%;
+            }
+            .section-content {
+                text-align: center;
+            }
+            .section-title {
+                flex-direction: column;
+                align-items: center;
+            }
+            .section-title .toggle-icon {
+                margin-top: 8px;
+                margin-left: 0;
+            }
+            .section-logo {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 10px;
+            }
+            .navbar-brand {
+                display: none;
+            }
+            .navbar {
+                justify-content: center;
+                padding: 8px 10px;
+            }
+            .navbar a {
+                font-size: 16px;
+                padding: 8px 10px;}
+            .dropdown-content {
+                position: static;
+                transform: none !important;
+                opacity: 1 !important;
+                display: none;
+                animation: none !important;
+                width: 100%;
+                box-shadow: none;
+                border-radius: 0;
+                background: var(--navbar-bg);
+            }
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+            .dropdown-content a {
+                text-align: center;
+                transform: none !important;
+                opacity: 1 !important;
+                transition-delay: 0s !important;
+                padding: 12px 10px;
+            }
+            .dropdown-content a:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+            .dark-mode-toggle {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                left: 20px;
+            }
+            .dark-mode-toggle i {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 60px 10px;
+            }
+            .section {
+                padding: 20px 10px;
+                gap: 15px;
+            }
+            .section-logo {
+                width: 100px;
+                height: 100px;
+            }
+            .navbar a {
+                font-size: 14px;
+                padding: 6px 8px;
+            }
+            .dark-mode-toggle {
+                width: 40px;
+                height: 40px;
+                bottom: 15px;
+                left: 15px;
+            }
+            .dark-mode-toggle i {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="https://rylplay.github.io/RLYTL/index.html">Home</a>
+        <div class="dropdown">
+            <a href="#">Projects</a>
+            <div class="dropdown-content">
+                <a href="#" style="--i:1">Rogue Slime</a>
+                <a href="#" style="--i:2">Doors</a>
+            </div>
+        </div>
+        <div class="navbar-brand">
+            <span class="rlytl">RLYTL</span> <span class="studio">Studio</span>
+        </div>
+    </div>
+
+    <div class="header-container">
+        <div class="header-content">
+            <div class="header">
+                <span class="rlytl">Coming </span> <span class="studio">Soon.</span>
+            </div>
+            <div class="header-subtitle">
+                Get ready! Our new website is launching soon. Stay tuned for updates and exciting news about our upcoming services and offerings.
+            </div>
+        </div>
+    </div>
+
+    <div class="section" style="--i:1">
+        <div class="section-content">
+            <div id="countdown-container">
+                <div id="countdown-timer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dark-mode-toggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <div class="footer-space"></div>
+
+    <script>
+        const navbar = document.querySelector('.navbar');
+        const navbarBrand = document.querySelector('.navbar-brand');
+        const darkModeToggle = document.querySelector('.dark-mode-toggle');
+        const body = document.body;
+        const sections = document.querySelectorAll('.section');
+        const dropdown = document.querySelector('.dropdown');
+        const dropdownContent = document.querySelector('.dropdown-content');
+        const countdownTimer = document.getElementById('countdown-timer');
+
+        let previousValues = {
+            days: '00',
+            hours: '00',
+            minutes: '00',
+            seconds: '00'
+        };
+
+        function updateCountdown() {
+            const targetDate = new Date('2025-06-20T19:00:00');
+            const now = new Date();
+            const difference = targetDate.getTime() - now.getTime();
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                // Format numbers to always have 2 digits
+                const formatNumber = num => num.toString().padStart(2, '0');
+                
+                const currentValues = {
+                    days: formatNumber(days),
+                    hours: formatNumber(hours),
+                    minutes: formatNumber(minutes),
+                    seconds: formatNumber(seconds)
+                };
+
+                // Highlight changing digits
+                highlightChanges(currentValues);
+
+                // Create the countdown display with animated digits
+                const countdownHTML = `
+                    <span class="countdown-digit" data-type="days" data-digit="0">${currentValues.days.charAt(0)}</span>
+                    <span class="countdown-digit" data-type="days" data-digit="1">${currentValues.days.charAt(1)}</span>
+                    <span class="countdown-separator">d</span>
+                    
+                    <span class="countdown-digit" data-type="hours" data-digit="0">${currentValues.hours.charAt(0)}</span>
+                    <span class="countdown-digit" data-type="hours" data-digit="1">${currentValues.hours.charAt(1)}</span>
+                    <span class="countdown-separator">h</span>
+                    
+                    <span class="countdown-digit" data-type="minutes" data-digit="0">${currentValues.minutes.charAt(0)}</span>
+                    <span class="countdown-digit" data-type="minutes" data-digit="1">${currentValues.minutes.charAt(1)}</span>
+                    <span class="countdown-separator">m</span>
+                    
+                    <span class="countdown-digit" data-type="seconds" data-digit="0">${currentValues.seconds.charAt(0)}</span>
+                    <span class="countdown-digit" data-type="seconds" data-digit="1">${currentValues.seconds.charAt(1)}</span>
+                    <span class="countdown-separator">s</span>
+                `;
+                
+                countdownTimer.innerHTML = countdownHTML;
+                previousValues = currentValues;
+            } else {
+                countdownTimer.innerHTML = `<span style="color: var(--link-color)">We're Live!</span>`;
+            }
+        }
+
+        function highlightChanges(currentValues) {
+            // First mark all digits as changing
+            document.querySelectorAll('.countdown-digit').forEach(digit => {
+                digit.classList.add('changing');
+            });
+
+            // Then remove the changing class from digits that haven't changed
+            setTimeout(() => {
+                Object.keys(previousValues).forEach(type => {
+                    for (let i = 0; i < 2; i++) {
+                        const digitElement = document.querySelector(`.countdown-digit[data-type="${type}"][data-digit="${i}"]`);
+                        if (digitElement && 
+                            previousValues[type].charAt(i) === currentValues[type].charAt(i)) {
+                            digitElement.classList.remove('changing');
+                        }
+                    }
+                });
+            }, 10);
+        }
+
+        function toggleDescription(id, icon) {
+            const description = document.getElementById(id);
+            description.classList.toggle('show');
+            icon.textContent = icon.textContent === '▼' ? '▲' : '▼';
+        }
+
+        function toggleDarkMode() {
+            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            const icon = darkModeToggle.querySelector('i');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+            localStorage.setItem('theme', body.getAttribute('data-theme'));
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.setAttribute('data-theme', savedTheme);
+            const icon = darkModeToggle.querySelector('i');
+            if (savedTheme === 'dark') {
+                icon.classList.add('fa-sun');
+                icon.classList.remove('fa-moon');
+            } else {
+                icon.classList.add('fa-moon');
+                icon.classList.remove('fa-sun');
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+
+        if (window.innerWidth <= 768) {
+            dropdown.addEventListener('click', () => {
+                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+            });
+        }
+
+        document.addEventListener('click', (event) => {
+            if (dropdownContent.style.display === 'block' && !dropdownContent.contains(event.target) && event.target !== dropdown) {
+                dropdownContent.style.display = 'none';
+            }
+        });
+
+        // Initialize countdown
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
